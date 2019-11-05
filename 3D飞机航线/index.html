@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>3D 球体飞机航线</title>
+    <script type="text/javascript" src="../js/echarts.js"></script>
+    <script type="text/javascript" src="../js/echarts-gl.min.js"></script>
+    <script type="text/javascript" src="../js/china.js"></script>
+</head>
+
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 100%;height:100vh;"></div>
+    <script>
+        var main = document.getElementById('main');
+        var width = document.body.clientWidth;
+        var height = document.body.clientHeight;
+        main.style.width = width + 'px';
+        main.style.height = height + 'px';
+        var myChart = echarts.init(main);
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(setEchartsOptions());
+
+        function setEchartsOptions() {
+            return {
+                // globe 地球组件，组件提供了地球的绘制以及相应的坐标系
+                globe: {
+                    environment: 'assets/starfield.jpg',  // 环境贴图
+                    baseTexture: '',  // 地球的纹理
+                    heightTexture: 'assets/bathymetry_bw_composite_4k.jpg',  // 地球的高度纹理
+                    displacementScale: 0.1,  //地球顶点位移的大小
+                    displacementQuality: 'high',  // 地球顶点位移的质量，更高的质量能够表现更多的地表高度细节
+                    baseColor: '#000',
+                    shading: 'realistic', // 地球中三维图形的着色效果  color\lambert\realistic
+                    light: {
+                        ambient: { //全局的环境光设置。默认0.2
+                            intensity: 1
+                        },
+                        main: {  //场景主光源的设置，在 globe 组件中就是太阳光
+                            intensity: 2,
+                            shadow: false
+                        },
+                        postEffect: {  //后处理特效的相关配置
+                            enable: true,
+                            depthOfField: {
+                                enable: false,
+                                focalDistance: 150
+                            }
+                        },
+                        ambientCubemap: { //ambientCubemap 会使用纹理作为环境光的光源
+                            texture: 'assets/lake.hdr',
+                            exposure: 1,
+                            diffuseIntensity: 10,
+                            specularIntensity: 10
+                        }
+                    },
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
