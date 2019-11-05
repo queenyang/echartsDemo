@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>echarts 实现3D柱状图</title>
+	<title>echarts 实现3D飞线地图</title>
 	<!-- <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
 	<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
 	<script type="text/javascript" src="https://gallery.echartsjs.com/dep/echarts/map/js/china.js"></script> -->
@@ -219,12 +219,12 @@
 			"大庆": [125.03, 46.58]
 		};
 
+		var startPoint = { name: '南昌', value: 60 };
 		var testData = [
 			{ name: '上海', value: 95 },
 			{ name: '广州', value: 90 },
 			{ name: '合肥', value: 80 },
 			{ name: '南宁', value: 70 },
-			{ name: '南昌', value: 60 },
 			{ name: '福建', value: 50 },
 			{ name: '长春', value: 40 },
 			{ name: '武汉', value: 30 },
@@ -235,12 +235,13 @@
 		var convertData = function (data) {
 			var res = [];
 			for (var i = 0; i < data.length; i++) {
+				var startCoord = geoCoordMap[startPoint.name];
 				var geoCoord = geoCoordMap[data[i].name];
 				if (geoCoord) {
-					res.push({
-						name: data[i].name,
-						value: geoCoord.concat(data[i].value)
-					});
+					res.push([
+						startCoord,
+						geoCoord
+					]);
 				}
 			}
 			return res;
@@ -263,7 +264,7 @@
 				show: false,
 				type: 'continuous',
 				seriesIndex: 0,
-				text: ['bar3D'],
+				text: ['lines3D'],
 				calculable: true,
 				min: 0,
 				max: 300,
@@ -273,8 +274,9 @@
 			}],
 			geo3D: {
 				map: 'china',
+				regionHeight: 1,
 				label: {
-					show: false,
+					show: true,
 					textStyle: {
 						color: "#fff", // 地图初始化区域字体颜色
 						fontSize: 12, // 字体大小
@@ -283,7 +285,7 @@
 					}
 				},
 				itemStyle: {
-					// areaColor: "#4285f4",
+					areaColor: "#4285f4",
 					color: '#4285f4',
 					opacity: 1,
 					borderWidth: 1,
@@ -306,21 +308,32 @@
 					maxBeta: 360,
 				}
 			},
-			series: [{
-				name: 'bar3D',
-				type: "bar3D",
-				coordinateSystem: 'geo3D',
-				barSize: 1.5, //柱子粗细
-				minHeight: 1,
-				shading: 'lambert',
-				opacity: 1,
-				// bevelSize: 0.3,
-				label: {
-					show: true,
-					formatter: '{b}'
+			series: [
+				{
+					name: 'lines3D',
+					type: "lines3D",
+					coordinateSystem: 'geo3D',
+					effect: {
+						show: true,
+						// period:8,
+						trailWidth: 3,
+						trailOpacity: 0.8,
+						trailLength: 0.6, // [0,1]线条长度百分百
+						constantSpeed: 4, //轨迹特效的移动动画是否是固定速度
+						trailColor: 'yellow',
+					},
+
+					// blendMode: 'lighter',
+
+					lineStyle: {  //飞线的线条样式
+						width: 0.8,
+						opacity: 0.5,
+						color: 'orange',
+					},
+
+					data: convertData(testData)
 				},
-				data: convertData(testData),
-			}]
+			]
 		}
 
 		// 使用刚指定的配置项和数据显示图表。
